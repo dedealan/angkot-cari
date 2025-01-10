@@ -4,9 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AngkotController;
 
-Route::get('/', function () {
-    return view('layouts.landing');
-});
+Route::get('/', [AngkotController::class, 'landing'])->name('landing');
+
+// API Jam berangkat untuk respon JS di landing
+Route::post('/api/angkot/jam-berangkat', [AngkotController::class, 'jamBerangkat'])->name('angkots.jam-berangkat');
+
+// Cek angkot
+Route::post('/api/angkot/cek-angkot', [AngkotController::class, 'cekAngkot'])->name('angkots.cek-angkot');
+
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('register', 'register')->name('register');

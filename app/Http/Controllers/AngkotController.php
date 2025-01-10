@@ -5,8 +5,65 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Angkot;
+
 class AngkotController extends Controller
 {
+    // Halaman landing
+    public function landing(Request $request)
+    {
+        // Ambil data rute_jalan
+        $ruteJalan = Angkot::distinct('rute_jalan')->get(['rute_jalan']);
+
+        return view('layouts.landing', [
+            'rutes' => $ruteJalan,
+        ]);
+    }
+
+    // Respon API jam berangkat
+    public function jamBerangkat(Request $request)
+    {
+        $data = $request->all();
+        $rute = $data['rute_jalan'];
+
+        $jamBerangkat = Angkot::where('rute_jalan', $rute)->distinct('jam_berangkat')->get(['jam_berangkat']);
+
+        if (count($jamBerangkat) > 0) {
+            return response()->json([
+                'success' => true,
+                'data' => $jamBerangkat
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data not found'
+            ], 404);
+        }
+    }
+
+    function cekAngkot(Request $request)
+    {
+        $data = $request->all();
+        $rute = $data['rute_jalan'] ?? null;
+        $jamBerangkat = $data['jam_berangkat'] ?? null;
+
+        $angkots = Angkot::where('rute_jalan', $rute)
+            ->where('jam_berangkat', $jamBerangkat)
+            ->get();
+
+        if (count($angkots) > 0) {
+            return response()->json([
+                'success' => true,
+                'data' => $angkots
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data not found'
+            ], 404);
+        }
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -115,7 +172,4 @@ class AngkotController extends Controller
 
         return response()->json($angkots);
     }
-
-
-
 }
